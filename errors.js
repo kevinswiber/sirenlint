@@ -13,8 +13,8 @@ const ERRORS = {
   LINK_REL_NOT_STRING: 'Link relation is not a string',
   LINK_MISSING_HREF: 'Link is missing `href` attribute',
   LINK_HREF_NOT_STRING: 'Link `href` attribute is not a string',
-  LINK_TITLE_NOT_STRING: 'Link `title` attribute is not a string'
-  //LINKED_SUB_ENTITY_EXTRA_DATA: 'Linked sub-entity has extra attributes'
+  LINK_TITLE_NOT_STRING: 'Link `title` attribute is not a string',
+  LINK_TYPE_NOT_STRING: 'Link `type` attribute is not a string'
 };
 
 module.exports = ERRORS;

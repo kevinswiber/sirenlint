@@ -133,3 +133,106 @@ test('root links item is missing rel', function(t) {
   t.deepEqual(errors[0].value, { href: 'http://example.com' });
   t.end();
 });
+
+test('root links item rel is not an array', function(t) {
+  var invalid = JSON.stringify({
+    links: [{
+      href: 'http://example.com',
+      rel: null
+    }]
+  });
+
+  var errors = validate(invalid);
+
+  t.equal(errors.length, 1);
+  t.equal(errors[0].message, ERRORS.LINK_RELS_NOT_ARRAY);
+  t.deepEqual(errors[0].segments, ['links', 0]);
+  t.deepEqual(errors[0].value, { href: 'http://example.com', rel: null });
+  t.end();
+});
+
+test('root links item rel item is not a string', function(t) {
+  var invalid = JSON.stringify({
+    links: [{
+      href: 'http://example.com',
+      rel: ['item', 0]
+    }]
+  });
+
+  var errors = validate(invalid);
+
+  t.equal(errors.length, 1);
+  t.equal(errors[0].message, ERRORS.LINK_REL_NOT_STRING);
+  t.deepEqual(errors[0].segments, ['links', 0, 'rel', 1]);
+  t.deepEqual(errors[0].value, 0);
+  t.end();
+});
+
+test('root links item href is missing', function(t) {
+  var invalid = JSON.stringify({
+    links: [{
+      rel: ['item']
+    }]
+  });
+
+  var errors = validate(invalid);
+
+  t.equal(errors.length, 1);
+  t.equal(errors[0].message, ERRORS.LINK_MISSING_HREF);
+  t.deepEqual(errors[0].segments, ['links', 0]);
+  t.deepEqual(errors[0].value, { rel: ['item'] });
+  t.end();
+});
+
+test('root links item href is not a string', function(t) {
+  var invalid = JSON.stringify({
+    links: [{
+      href: null,
+      rel: ['item']
+    }]
+  });
+
+  var errors = validate(invalid);
+
+  t.equal(errors.length, 1);
+  t.equal(errors[0].message, ERRORS.LINK_HREF_NOT_STRING);
+  t.deepEqual(errors[0].segments, ['links', 0, 'href']);
+  t.equal(errors[0].value, null);
+  t.end();
+});
+
+test('root links item type is not a string', function(t) {
+  var invalid = JSON.stringify({
+    links: [{
+      type: null,
+      rel: ['item'],
+      href: ''
+    }]
+  });
+
+  var errors = validate(invalid);
+
+  t.equal(errors.length, 1);
+  t.equal(errors[0].message, ERRORS.LINK_TYPE_NOT_STRING);
+  t.deepEqual(errors[0].segments, ['links', 0, 'type']);
+  t.equal(errors[0].value, null);
+  t.end();
+});
+
+test('root links item title is not a string', function(t) {
+  var invalid = JSON.stringify({
+    links: [{
+      title: null,
+      rel: ['item'],
+      href: ''
+    }]
+  });
+
+  var errors = validate(invalid);
+
+  t.equal(errors.length, 1);
+  t.equal(errors[0].message, ERRORS.LINK_TITLE_NOT_STRING);
+  t.deepEqual(errors[0].segments, ['links', 0, 'title']);
+  t.equal(errors[0].value, null);
+  t.end();
+});

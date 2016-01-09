@@ -150,14 +150,14 @@ function checkLinks(links, segments) {
       if (!Array.isArray(rel)) {
         var err = error(ERRORS.LINK_RELS_NOT_ARRAY, segs, l);
         errors.push(err);
+      } else {
+        rel.forEach(function(r, j) {
+          if (typeof r !== 'string') {
+            var err = error(ERRORS.LINK_REL_NOT_STRING, segs.concat([j]), r);
+            errors.push(err);
+          }
+        });
       }
-
-      rel.forEach(function(r, j) {
-        if (typeof r !== 'string') {
-          var err = error(ERRORS.LINK_REL_NOT_STRING, segs.concat([j]), r);
-          errors.push(err);
-        }
-      });
 
       segs.pop();
     }
@@ -166,13 +166,19 @@ function checkLinks(links, segments) {
       var err = error(ERRORS.LINK_MISSING_HREF, segs, l);
       errors.push(err);
     } else if (typeof l.href !== 'string') {
-      var err = error(ERRORS.LINK_HREF_NOT_STRING, segs.concat(['href']), l);
+      var err = error(ERRORS.LINK_HREF_NOT_STRING, segs.concat(['href']), l.href);
       errors.push(err);
     }
 
     if (l.hasOwnProperty('title') && typeof l.title !== 'string') {
       var s = segs.concat(['title']);
-      var err = error(ERRORS.LINK_TITLE_NOT_STRING, s, l);
+      var err = error(ERRORS.LINK_TITLE_NOT_STRING, s, l.title);
+      errors.push(err);
+    }
+
+    if (l.hasOwnProperty('type') && typeof l.title !== 'string') {
+      var s = segs.concat(['type']);
+      var err = error(ERRORS.LINK_TYPE_NOT_STRING, s, l.type);
       errors.push(err);
     }
   });
