@@ -3,12 +3,12 @@ var ERRORS = require('../errors');
 var validate = require('../validate');
 
 test('invalid json', function(t) {
-  var invalid = '{^}';
+  var invalid = '{"}';
 
   var errors = validate(invalid);
 
   t.equal(errors.length, 1);
-  t.equal(errors[0].message, ERRORS.INVALID_JSON);
+  t.equal(errors[0].message.split('\n')[0], ERRORS.INVALID_JSON);
   t.deepEqual(errors[0].segments, []);
   t.equal(errors[0].value, invalid);
   t.end();

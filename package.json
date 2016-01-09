@@ -20,7 +20,9 @@
   "devDependencies": {
     "tape": "^4.4.0"
   },
-  "dependencies": {},
+  "dependencies": {
+    "jsonlint": "^1.6.2"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/kevinswiber/siren-lint.git"

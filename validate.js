@@ -1,3 +1,4 @@
+var jsonlint = require('jsonlint');
 var ERRORS = require('./errors');
 
 function ValidationError(message, segments, value) {
@@ -34,9 +35,10 @@ module.exports = function validate(subject) {
   var segments = [];
 
   try {
-    result = JSON.parse(subject);
+    result = jsonlint.parse(subject);
   } catch(err) {
-    errors.push(error(ERRORS.INVALID_JSON, segments, subject));
+    errors.push(error(ERRORS.INVALID_JSON + '\n' + err.message,
+          segments, subject));
     return errors;
   }
 
