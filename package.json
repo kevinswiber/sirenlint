@@ -1,0 +1,32 @@
+{
+  "name": "siren-lint",
+  "version": "0.1.0",
+  "description": "A lint tool for validating Siren (http://sirenspec.org).",
+  "main": "validate.js",
+  "directories": {
+    "example": "example",
+    "test": "test"
+  },
+  "scripts": {
+    "test": "tape ./test/*.js"
+  },
+  "keywords": [
+    "siren",
+    "lint",
+    "validate"
+  ],
+  "author": "Kevin Swiber <kswiber@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "tape": "^4.4.0"
+  },
+  "dependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kevinswiber/siren-lint.git"
+  },
+  "bugs": {
+    "url": "https://github.com/kevinswiber/siren-lint/issues"
+  },
+  "homepage": "https://github.com/kevinswiber/siren-lint#readme"
+}
