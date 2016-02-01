@@ -2,6 +2,14 @@ var jsonlint = require('jsonlint');
 var ERRORS = require('./errors');
 var WARNINGS = require('./warnings');
 
+var FIELD_TYPES = [
+  'hidden', 'text', 'search', 'tel', 'url',
+  'email', 'password', 'datetime', 'date',
+  'month', 'week', 'time', 'datetime-local', 
+  'number', 'range', 'color', 'checkbox',
+  'radio', 'file', 'image', 'button'
+];
+
 function ValidationError(message, segments, value) {
   if (!(this instanceof ValidationError)) {
     return new ValidationError(message, segments);
@@ -212,12 +220,7 @@ function checkActions(actions, segments) {
       results.push(err);
     }
 
-    if (a.hasOwnProperty('fields') && a.fields !== null
-        && !Array.isArray(a.fields)) {
-      var err = error(ERRORS.ACTION_FIELDS_NOT_ARRAY, 
-          segs.concat(['fields']), a.fields);
-      results.push(err);
-    } else {
+    if (a.hasOwnProperty('fields') && a.fields !== null) {
       results = results.concat(checkFields(a.fields, segs.concat(['fields'])));
     }
   });
@@ -226,7 +229,56 @@ function checkActions(actions, segments) {
 }
 
 function checkFields(fields, segments) {
-  return [];
+  var results = [];
+  if (fields !== null && !Array.isArray(fields)) {
+    var err = error(ERRORS.ACTION_FIELDS_NOT_ARRAY, segments, fields);
+    results.push(err);
+    return results;
+  }
+
+  fields.forEach(function(f, i) {
+    var segs = segments.concat([i]);
+
+    if (!f.hasOwnProperty('name')) {
+      var err = error(ERRORS.ACTION_FIELD_MISSING_NAME,
+          segs, f);
+      results.push(err);
+    } else if (f.name !== null && typeof f.name !== 'string') {
+      var err = error(ERRORS.ACTION_FIELD_NAME_NOT_STRING,
+          segs.concat(['name']), f.name);
+      results.push(err);
+    }
+
+    if (f.hasOwnProperty('class')) {
+      results = results.concat(checkClass(f.class, segs.concat(['class'])));
+    }
+
+    if (f.hasOwnProperty('title') && f.title !== null
+        && typeof f.title !== 'string') {
+      var s = segs.concat(['title']);
+      var err = error(ERRORS.ACTION_FIELD_TITLE_NOT_STRING, s, f.title);
+      results.push(err);
+    }
+
+    if (f.hasOwnProperty('type') && f.type !== null) {
+      var s = segs.concat(['type']);
+      if (typeof f.type !== 'string') {
+        var err = error(ERRORS.ACTION_FIELD_TYPE_NOT_STRING, s, f.type);
+        results.push(err);
+        return;
+      }
+
+      if (FIELD_TYPES.indexOf(f.type) === -1) {
+        var warning = warn(WARNINGS.UNKNOWN_FIELD, s, f.type);
+        results.push(warning);
+      }
+    }
+
+    // Future: Validate field values?  The Siren specification
+    // currently leaves field values intentionally unspecified.
+  });
+
+  return results; 
 }
 
 function checkLinks(links, segments) {

@@ -438,3 +438,99 @@ test('root action fields is not an array', function(t) {
   t.deepEqual(results[0].value, 0);
   t.end();
 });
+
+test('root action field is missing name', function(t) {
+  var invalid = JSON.stringify({
+    actions: [{
+      name: 'zip',
+      href: '',
+      fields: [{}]
+    }]
+  });
+
+  var results = validate(invalid);
+  results = errors(results);
+
+  t.equal(results.length, 1);
+  t.equal(results[0].message, ERRORS.ACTION_FIELD_MISSING_NAME);
+  t.deepEqual(results[0].segments, ['actions', 0, 'fields', 0]);
+  t.deepEqual(results[0].value, {});
+  t.end();
+});
+
+test('root action field name is not a string', function(t) {
+  var invalid = JSON.stringify({
+    actions: [{
+      name: 'zip',
+      href: '',
+      fields: [{ name: 0 }]
+    }]
+  });
+
+  var results = validate(invalid);
+  results = errors(results);
+
+  t.equal(results.length, 1);
+  t.equal(results[0].message, ERRORS.ACTION_FIELD_NAME_NOT_STRING);
+  t.deepEqual(results[0].segments, ['actions', 0, 'fields', 0, 'name']);
+  t.deepEqual(results[0].value, 0);
+  t.end();
+});
+
+test('root action field title is not a string', function(t) {
+  var invalid = JSON.stringify({
+    actions: [{
+      name: 'zip',
+      href: '',
+      fields: [{ name: 'a', title: 0 }]
+    }]
+  });
+
+  var results = validate(invalid);
+  results = errors(results);
+
+  t.equal(results.length, 1);
+  t.equal(results[0].message, ERRORS.ACTION_FIELD_TITLE_NOT_STRING);
+  t.deepEqual(results[0].segments, ['actions', 0, 'fields', 0, 'title']);
+  t.deepEqual(results[0].value, 0);
+  t.end();
+});
+
+test('root action field type is not a string', function(t) {
+  var invalid = JSON.stringify({
+    actions: [{
+      name: 'zip',
+      href: '',
+      fields: [{ name: 'a', type: 0 }]
+    }]
+  });
+
+  var results = validate(invalid);
+  results = errors(results);
+
+  t.equal(results.length, 1);
+  t.equal(results[0].message, ERRORS.ACTION_FIELD_TYPE_NOT_STRING);
+  t.deepEqual(results[0].segments, ['actions', 0, 'fields', 0, 'type']);
+  t.deepEqual(results[0].value, 0);
+  t.end();
+});
+
+test('root action field type is unknown', function(t) {
+  var invalid = JSON.stringify({
+    actions: [{
+      name: 'zip',
+      href: '',
+      fields: [{ name: 'a', type: 'mystery' }]
+    }],
+    links: [{ rel: ['self'], href: '' }]
+  });
+
+  var results = validate(invalid);
+  results = warnings(results);
+
+  t.equal(results.length, 1);
+  t.equal(results[0].message, WARNINGS.UNKNOWN_FIELD);
+  t.deepEqual(results[0].segments, ['actions', 0, 'fields', 0, 'type']);
+  t.deepEqual(results[0].value, 'mystery');
+  t.end();
+});

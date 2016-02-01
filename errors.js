@@ -23,7 +23,11 @@ const ERRORS = {
   ACTION_MISSING_HREF: 'Action is missing `href` attribute',
   ACTION_HREF_NOT_STRING: 'Action `href` attribute is not a string',
   ACTION_TITLE_NOT_STRING: 'Action `type` attribute is not a string',
-  ACTION_TYPE_NOT_STRING: 'Action `type` attribute is not a string'
+  ACTION_TYPE_NOT_STRING: 'Action `type` attribute is not a string',
+  ACTION_FIELD_MISSING_NAME: 'Field is missing `name` attribute',
+  ACTION_FIELD_NAME_NOT_STRING: 'Field `name` attribute is not a string',
+  ACTION_FIELD_TITLE_NOT_STRING: 'Field `type` attribute is not a string',
+  ACTION_FIELD_TYPE_NOT_STRING: 'Field `type` attribute is not a string'
 };
 
 module.exports = ERRORS;
