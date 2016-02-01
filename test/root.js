@@ -9,6 +9,12 @@ function errors(results) {
   });
 }
 
+function warnings(results) {
+  return results.filter(function(r) {
+    return r instanceof validate.ValidationWarning;
+  });
+}
+
 test('invalid json', function(t) {
   var invalid = '{"}';
 
@@ -264,6 +270,7 @@ test('root is missing self link', function(t) {
   });
 
   var results = validate(invalid);
+  results = warnings(results);
 
   t.equal(results.length, 1);
   t.equal(results[0].message, WARNINGS.MISSING_SELF_LINK);

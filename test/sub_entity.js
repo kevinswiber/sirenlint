@@ -1,10 +1,17 @@
 var test = require('tape');
 var ERRORS = require('../errors');
+var WARNINGS = require('../warnings');
 var validate = require('../validate');
 
 function errors(results) {
   return results.filter(function(r) {
     return r instanceof validate.ValidationError;
+  });
+}
+
+function warnings(results) {
+  return results.filter(function(r) {
+    return r instanceof validate.ValidationWarning;
   });
 }
 
@@ -269,5 +276,22 @@ test('sub-entity links item title is not a string', function(t) {
   t.deepEqual(results[0].segments,
       ['entities', 0, 'links', 0, 'title']);
   t.equal(results[0].value, 0);
+  t.end();
+});
+
+test('root is missing self link', function(t) {
+  var invalid = JSON.stringify({
+    links: [{
+      rel: ['item'],
+      href: ''
+    }]
+  });
+
+  var results = validate(invalid);
+  results = warnings(results);
+
+  t.equal(results.length, 1);
+  t.equal(results[0].message, WARNINGS.MISSING_SELF_LINK);
+  t.deepEqual(results[0].segments, ['links']);
   t.end();
 });
