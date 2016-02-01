@@ -31,50 +31,50 @@ function warn(message, segments, value) {
 }
 
 var validate = module.exports = function validate(subject) {
-  var errors = [];
-  var result = subject;
+  var results = [];
+  var subject = subject;
   var segments = [];
 
   try {
-    result = jsonlint.parse(subject.toString('utf8'));
+    subject = jsonlint.parse(subject.toString('utf8'));
   } catch(err) {
-    errors.push(error(ERRORS.INVALID_JSON + '\n' + err.message,
+    results.push(error(ERRORS.INVALID_JSON + '\n' + err.message,
           segments, subject));
-    return errors;
+    return results;
   }
 
-  errors = errors.concat(checkEntity(result, segments.concat([])));
+  results = results.concat(checkEntity(subject, segments.concat([])));
 
-  return errors;
+  return results;
 }
 
-function checkEntity(result, segments) {
-  var errors = [];
+function checkEntity(subject, segments) {
+  var results = [];
 
-  if (result.hasOwnProperty('class')) {
-    errors = errors.concat(checkClass(result.class,
+  if (subject.hasOwnProperty('class')) {
+    results = results.concat(checkClass(subject.class,
           segments.concat(['class'])));
   }
 
-  if (result.hasOwnProperty('properties')) {
-    errors = errors.concat(checkProperties(result.properties,
+  if (subject.hasOwnProperty('properties')) {
+    results = results.concat(checkProperties(subject.properties,
           segments.concat(['properties'])));
   }
 
-  if (result.hasOwnProperty('entities')) {
-    errors = errors.concat(checkSubEntities(result.entities,
+  if (subject.hasOwnProperty('entities')) {
+    results = results.concat(checkSubEntities(subject.entities,
           segments.concat(['entities'])));
   }
 
-  if (result.hasOwnProperty('links')) {
-    errors = errors.concat(checkLinks(result.links,
+  if (subject.hasOwnProperty('links')) {
+    results = results.concat(checkLinks(subject.links,
           segments.concat(['links'])));
   }
 
-  if (segments.length === 0 || !result.hasOwnProperty('href')) {
+  if (segments.length === 0 || !subject.hasOwnProperty('href')) {
     var found = false;
-    if (result.hasOwnProperty('links') && Array.isArray(result.links)) {
-      found = result.links.some(function(l) {
+    if (subject.hasOwnProperty('links') && Array.isArray(subject.links)) {
+      found = subject.links.some(function(l) {
         return l.hasOwnProperty('rel')
                && Array.isArray(l.rel)
                && l.rel.length > 0
@@ -83,104 +83,104 @@ function checkEntity(result, segments) {
     }
 
     if (!found) {
-      errors.push(warn(WARNINGS.MISSING_SELF_LINK,
-            segments.concat(['links']), result.links));
+      results.push(warn(WARNINGS.MISSING_SELF_LINK,
+            segments.concat(['links']), subject.links));
     }
   }
 
-  if (result.hasOwnProperty('title')) {
-    if (result.title != null && result.title !== null
-        && typeof result.title !== 'string') {
-      errors.push(error(ERRORS.TITLE_TYPE_NOT_STRING,
-            segments.concat(['title']), result.title));
+  if (subject.hasOwnProperty('title')) {
+    if (subject.title != null && subject.title !== null
+        && typeof subject.title !== 'string') {
+      results.push(error(ERRORS.TITLE_TYPE_NOT_STRING,
+            segments.concat(['title']), subject.title));
     }
   }
 
-  return errors;
+  return results;
 }
 
 function checkClass(cls, segments) {
-  var errors = [];
+  var results = [];
 
   if (!Array.isArray(cls)) {
-    errors.push(error(ERRORS.CLASSES_NOT_ARRAY, segments, cls));
-    return errors;
+    results.push(error(ERRORS.CLASSES_NOT_ARRAY, segments, cls));
+    return results;
   }
 
   cls.forEach(function(c, i) {
     if (typeof c !== 'string') {
       var err = error(ERRORS.CLASS_NOT_STRING, segments.concat([i]), c);
-      errors.push(err);
+      results.push(err);
     }
   });
 
-  return errors;
+  return results;
 }
 
 function checkProperties(properties, segments) {
-  var errors = [];
+  var results = [];
 
   if (typeof properties !== 'object' || Array.isArray(properties)) {
     var err = error(ERRORS.PROPERTIES_NOT_OBJECT, segments, properties);
-    errors.push(err);
+    results.push(err);
   }
 
-  return errors;
+  return results;
 }
 
 function checkSubEntities(entities, segments) {
-  var errors = [];
+  var results = [];
 
   if (!Array.isArray(entities)) {
     var err = error(ERRORS.SUB_ENTITIES_NOT_ARRAY, segments, entities);
-    errors.push(err);
-    return errors;
+    results.push(err);
+    return results;
   }
 
   entities.forEach(function(e, i) {
     var segs = segments.concat([i]);
     if (!e.hasOwnProperty('rel')) {
       var err = error(ERRORS.SUB_ENTITY_MISSING_REL, segs, e);
-      errors.push(err);
+      results.push(err);
     }
 
-    errors = errors.concat(checkEntity(e, segs));
+    results = results.concat(checkEntity(e, segs));
   });
 
-  return errors;
+  return results;
 };
 
 function checkLinks(links, segments) {
-  var errors = [];
+  var results = [];
 
   if (!Array.isArray(links)) {
     var err = error(ERRORS.LINKS_NOT_ARRAY, segments, links);
-    errors.push(err);
-    return errors;
+    results.push(err);
+    return results;
   }
 
   links.forEach(function(l, i) {
     var segs = segments.concat([i]);
 
     if (l.hasOwnProperty('class')) {
-      errors = errors.concat(checkClass(l.class, segs.concat(['class'])));
+      results = results.concat(checkClass(l.class, segs.concat(['class'])));
     }
 
     if (!l.hasOwnProperty('rel')) {
       var err = error(ERRORS.LINK_MISSING_REL, segs, l);
-      errors.push(err);
+      results.push(err);
     } else {
       var rel = l.rel;
       segs.push('rel');
 
       if (!Array.isArray(rel)) {
         var err = error(ERRORS.LINK_RELS_NOT_ARRAY, segs, l);
-        errors.push(err);
+        results.push(err);
       } else {
         rel.forEach(function(r, j) {
           if (typeof r !== 'string') {
             var err = error(ERRORS.LINK_REL_NOT_STRING, segs.concat([j]), r);
-            errors.push(err);
+            results.push(err);
           }
         });
       }
@@ -190,28 +190,28 @@ function checkLinks(links, segments) {
 
     if (!l.hasOwnProperty('href')) {
       var err = error(ERRORS.LINK_MISSING_HREF, segs, l);
-      errors.push(err);
+      results.push(err);
     } else if (typeof l.href !== 'string') {
       var err = error(ERRORS.LINK_HREF_NOT_STRING, segs.concat(['href']), l.href);
-      errors.push(err);
+      results.push(err);
     }
 
     if (l.hasOwnProperty('title') && l.title !== null
         && typeof l.title !== 'string') {
       var s = segs.concat(['title']);
       var err = error(ERRORS.LINK_TITLE_NOT_STRING, s, l.title);
-      errors.push(err);
+      results.push(err);
     }
 
     if (l.hasOwnProperty('type') && l.type !== null
         && typeof l.title !== 'string') {
       var s = segs.concat(['type']);
       var err = error(ERRORS.LINK_TYPE_NOT_STRING, s, l.type);
-      errors.push(err);
+      results.push(err);
     }
   });
 
-  return errors;
+  return results;
 }
 
 validate.ValidationError = ValidationError;
