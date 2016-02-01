@@ -279,12 +279,15 @@ test('sub-entity links item title is not a string', function(t) {
   t.end();
 });
 
-test('root is missing self link', function(t) {
+test('sub-entity is missing self link', function(t) {
   var invalid = JSON.stringify({
-    links: [{
-      rel: ['item'],
-      href: ''
-    }]
+    entities: [{
+      links: [{
+        rel: ['item'],
+        href: ''
+      }]
+    }],
+    links: [{ rel: ['self'], href: '' }]
   });
 
   var results = validate(invalid);
@@ -292,6 +295,194 @@ test('root is missing self link', function(t) {
 
   t.equal(results.length, 1);
   t.equal(results[0].message, WARNINGS.MISSING_SELF_LINK);
-  t.deepEqual(results[0].segments, ['links']);
+  t.deepEqual(results[0].segments, ['entities', 0, 'links']);
+  t.end();
+});
+
+test('sub-entity actions attribute is not an array', function(t) {
+  var invalid = JSON.stringify({
+    entities: [{
+      rel: ['item'],
+      actions: {}
+    }]
+  });
+
+  var results = validate(invalid);
+  results = errors(results);
+
+  t.equal(results.length, 1);
+  t.equal(results[0].message, ERRORS.ACTIONS_NOT_ARRAY);
+  t.deepEqual(results[0].segments, ['entities', 0, 'actions']);
+  t.deepEqual(results[0].value, {});
+  t.end();
+});
+
+test('sub-entity action is missing name', function(t) {
+  var invalid = JSON.stringify({
+    entities: [{
+      rel: ['item'],
+      actions: [{
+        href: ''
+      }]
+    }]
+  });
+
+  var results = validate(invalid);
+  results = errors(results);
+
+  t.equal(results.length, 1);
+  t.equal(results[0].message, ERRORS.ACTION_MISSING_NAME);
+  t.deepEqual(results[0].segments, ['entities', 0, 'actions', 0]);
+  t.deepEqual(results[0].value, { href: '' });
+  t.end();
+});
+
+test('sub-entity action name is not a string', function(t) {
+  var invalid = JSON.stringify({
+    entities: [{
+      rel: ['item'],
+      actions: [{
+        name: 0,
+        href: ''
+      }]
+    }]
+  });
+
+  var results = validate(invalid);
+  results = errors(results);
+
+  t.equal(results.length, 1);
+  t.equal(results[0].message, ERRORS.ACTION_NAME_NOT_STRING);
+  t.deepEqual(results[0].segments, ['entities', 0, 'actions', 0, 'name']);
+  t.deepEqual(results[0].value, 0);
+  t.end();
+});
+
+test('sub-entity action method is not a string', function(t) {
+  var invalid = JSON.stringify({
+    entities: [{
+      rel: ['item'],
+      actions: [{
+        name: 'zip',
+        method: 0,
+        href: ''
+      }]
+    }]
+  });
+
+  var results = validate(invalid);
+  results = errors(results);
+
+  t.equal(results.length, 1);
+  t.equal(results[0].message, ERRORS.ACTION_METHOD_NOT_STRING);
+  t.deepEqual(results[0].segments, ['entities', 0, 'actions', 0, 'method']);
+  t.deepEqual(results[0].value, 0);
+  t.end();
+});
+
+test('sub-entity action is missing href', function(t) {
+  var invalid = JSON.stringify({
+    entities: [{
+      rel: ['item'],
+      actions: [{
+        name: 'zip'
+      }]
+    }]
+  });
+
+  var results = validate(invalid);
+  results = errors(results);
+
+  t.equal(results.length, 1);
+  t.equal(results[0].message, ERRORS.ACTION_MISSING_HREF);
+  t.deepEqual(results[0].segments, ['entities', 0, 'actions', 0]);
+  t.deepEqual(results[0].value, { name: 'zip' });
+  t.end();
+});
+
+test('sub-entity action href is not a string', function(t) {
+  var invalid = JSON.stringify({
+    entities: [{
+      rel: ['item'],
+      actions: [{
+        name: 'zip',
+        href: 0
+      }]
+    }]
+  });
+
+  var results = validate(invalid);
+  results = errors(results);
+
+  t.equal(results.length, 1);
+  t.equal(results[0].message, ERRORS.ACTION_HREF_NOT_STRING);
+  t.deepEqual(results[0].segments, ['entities', 0, 'actions', 0, 'href']);
+  t.deepEqual(results[0].value, 0);
+  t.end();
+});
+
+test('sub-entity action title is not a string', function(t) {
+  var invalid = JSON.stringify({
+    entities: [{
+      rel: ['item'],
+      actions: [{
+        name: 'zip',
+        href: '',
+        title: 0
+      }]
+    }]
+  });
+
+  var results = validate(invalid);
+  results = errors(results);
+
+  t.equal(results.length, 1);
+  t.equal(results[0].message, ERRORS.ACTION_TITLE_NOT_STRING);
+  t.deepEqual(results[0].segments, ['entities', 0, 'actions', 0, 'title']);
+  t.deepEqual(results[0].value, 0);
+  t.end();
+});
+
+test('sub-entity action type is not a string', function(t) {
+  var invalid = JSON.stringify({
+    entities: [{
+      rel: ['item'],
+      actions: [{
+        name: 'zip',
+        href: '',
+        type: 0
+      }]
+    }]
+  });
+
+  var results = validate(invalid);
+  results = errors(results);
+
+  t.equal(results.length, 1);
+  t.equal(results[0].message, ERRORS.ACTION_TYPE_NOT_STRING);
+  t.deepEqual(results[0].segments, ['entities', 0, 'actions', 0, 'type']);
+  t.deepEqual(results[0].value, 0);
+  t.end();
+});
+
+test('sub-entity action fields is not an array', function(t) {
+  var invalid = JSON.stringify({
+    entities: [{
+      rel: ['item'],
+      actions: [{
+        name: 'zip',
+        href: '',
+        fields: 0
+      }]
+    }]
+  });
+
+  var results = validate(invalid);
+  results = errors(results);
+
+  t.equal(results.length, 1);
+  t.equal(results[0].message, ERRORS.ACTION_FIELDS_NOT_ARRAY);
+  t.deepEqual(results[0].segments, ['entities', 0, 'actions', 0, 'fields']);
+  t.deepEqual(results[0].value, 0);
   t.end();
 });

@@ -15,7 +15,15 @@ const ERRORS = {
   LINK_HREF_NOT_STRING: 'Link `href` attribute is not a string',
   LINK_TITLE_NOT_STRING: 'Link `title` attribute is not a string',
   LINK_TYPE_NOT_STRING: 'Link `type` attribute is not a string',
-  TITLE_TYPE_NOT_STRING: 'The `title` attribute is not a string'
+  TITLE_TYPE_NOT_STRING: 'The `title` attribute is not a string',
+  ACTIONS_NOT_ARRAY: 'The `actions` attribute is not an array',
+  ACTION_METHOD_NOT_STRING: 'Action `method` is not a string',
+  ACTION_MISSING_NAME: 'Action is missing `name` attribute',
+  ACTION_NAME_NOT_STRING: 'Action `name` attribute is not a string',
+  ACTION_MISSING_HREF: 'Action is missing `href` attribute',
+  ACTION_HREF_NOT_STRING: 'Action `href` attribute is not a string',
+  ACTION_TITLE_NOT_STRING: 'Action `type` attribute is not a string',
+  ACTION_TYPE_NOT_STRING: 'Action `type` attribute is not a string'
 };
 
 module.exports = ERRORS;

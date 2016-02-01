@@ -277,3 +277,164 @@ test('root is missing self link', function(t) {
   t.deepEqual(results[0].segments, ['links']);
   t.end();
 });
+
+test('root actions attribute is not an array', function(t) {
+  var invalid = JSON.stringify({
+    actions: {}
+  });
+
+  var results = validate(invalid);
+  results = errors(results);
+
+  t.equal(results.length, 1);
+  t.equal(results[0].message, ERRORS.ACTIONS_NOT_ARRAY);
+  t.deepEqual(results[0].segments, ['actions']);
+  t.deepEqual(results[0].value, {});
+  t.end();
+});
+
+test('root action is missing name', function(t) {
+  var invalid = JSON.stringify({
+    actions: [{
+      href: ''
+    }]
+  });
+
+  var results = validate(invalid);
+  results = errors(results);
+
+  t.equal(results.length, 1);
+  t.equal(results[0].message, ERRORS.ACTION_MISSING_NAME);
+  t.deepEqual(results[0].segments, ['actions', 0]);
+  t.deepEqual(results[0].value, { href: '' });
+  t.end();
+});
+
+test('root action name is not a string', function(t) {
+  var invalid = JSON.stringify({
+    actions: [{
+      name: 0,
+      href: ''
+    }]
+  });
+
+  var results = validate(invalid);
+  results = errors(results);
+
+  t.equal(results.length, 1);
+  t.equal(results[0].message, ERRORS.ACTION_NAME_NOT_STRING);
+  t.deepEqual(results[0].segments, ['actions', 0, 'name']);
+  t.deepEqual(results[0].value, 0);
+  t.end();
+});
+
+test('root action method is not a string', function(t) {
+  var invalid = JSON.stringify({
+    actions: [{
+      name: 'zip',
+      method: 0,
+      href: ''
+    }]
+  });
+
+  var results = validate(invalid);
+  results = errors(results);
+
+  t.equal(results.length, 1);
+  t.equal(results[0].message, ERRORS.ACTION_METHOD_NOT_STRING);
+  t.deepEqual(results[0].segments, ['actions', 0, 'method']);
+  t.deepEqual(results[0].value, 0);
+  t.end();
+});
+
+test('root action is missing href', function(t) {
+  var invalid = JSON.stringify({
+    actions: [{
+      name: 'zip'
+    }]
+  });
+
+  var results = validate(invalid);
+  results = errors(results);
+
+  t.equal(results.length, 1);
+  t.equal(results[0].message, ERRORS.ACTION_MISSING_HREF);
+  t.deepEqual(results[0].segments, ['actions', 0]);
+  t.deepEqual(results[0].value, { name: 'zip' });
+  t.end();
+});
+
+test('root action href is not a string', function(t) {
+  var invalid = JSON.stringify({
+    actions: [{
+      name: 'zip',
+      href: 0
+    }]
+  });
+
+  var results = validate(invalid);
+  results = errors(results);
+
+  t.equal(results.length, 1);
+  t.equal(results[0].message, ERRORS.ACTION_HREF_NOT_STRING);
+  t.deepEqual(results[0].segments, ['actions', 0, 'href']);
+  t.deepEqual(results[0].value, 0);
+  t.end();
+});
+
+test('root action title is not a string', function(t) {
+  var invalid = JSON.stringify({
+    actions: [{
+      name: 'zip',
+      href: '',
+      title: 0
+    }]
+  });
+
+  var results = validate(invalid);
+  results = errors(results);
+
+  t.equal(results.length, 1);
+  t.equal(results[0].message, ERRORS.ACTION_TITLE_NOT_STRING);
+  t.deepEqual(results[0].segments, ['actions', 0, 'title']);
+  t.deepEqual(results[0].value, 0);
+  t.end();
+});
+
+test('root action type is not a string', function(t) {
+  var invalid = JSON.stringify({
+    actions: [{
+      name: 'zip',
+      href: '',
+      type: 0
+    }]
+  });
+
+  var results = validate(invalid);
+  results = errors(results);
+
+  t.equal(results.length, 1);
+  t.equal(results[0].message, ERRORS.ACTION_TYPE_NOT_STRING);
+  t.deepEqual(results[0].segments, ['actions', 0, 'type']);
+  t.deepEqual(results[0].value, 0);
+  t.end();
+});
+
+test('root action fields is not an array', function(t) {
+  var invalid = JSON.stringify({
+    actions: [{
+      name: 'zip',
+      href: '',
+      fields: 0
+    }]
+  });
+
+  var results = validate(invalid);
+  results = errors(results);
+
+  t.equal(results.length, 1);
+  t.equal(results[0].message, ERRORS.ACTION_FIELDS_NOT_ARRAY);
+  t.deepEqual(results[0].segments, ['actions', 0, 'fields']);
+  t.deepEqual(results[0].value, 0);
+  t.end();
+});

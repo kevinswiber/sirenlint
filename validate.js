@@ -66,6 +66,11 @@ function checkEntity(subject, segments) {
           segments.concat(['entities'])));
   }
 
+  if (subject.hasOwnProperty('actions')) {
+    results = results.concat(checkActions(subject.actions,
+          segments.concat(['actions'])));
+  }
+
   if (subject.hasOwnProperty('links')) {
     results = results.concat(checkLinks(subject.links,
           segments.concat(['links'])));
@@ -149,6 +154,80 @@ function checkSubEntities(entities, segments) {
 
   return results;
 };
+
+function checkActions(actions, segments) {
+  var results = []
+
+  if (!Array.isArray(actions)) {
+    var err = error(ERRORS.ACTIONS_NOT_ARRAY, segments, actions);
+    results.push(err);
+    return results;
+  }
+
+  actions.forEach(function(a, i) {
+    var segs = segments.concat([i]);
+
+    if (!a.hasOwnProperty('name')) {
+      var err = error(ERRORS.ACTION_MISSING_NAME,
+          segs, a);
+      results.push(err);
+    } else if (a.name !== null && typeof a.name !== 'string') {
+      var err = error(ERRORS.ACTION_NAME_NOT_STRING,
+          segs.concat(['name']), a.name);
+      results.push(err);
+    }
+
+    if (a.hasOwnProperty('class')) {
+      results = results.concat(checkClass(a.class, segs.concat(['class'])));
+    }
+
+    if (a.hasOwnProperty('method') && a.method !== null
+        && typeof a.method !== 'string') {
+      var err = error(ERRORS.ACTION_METHOD_NOT_STRING,
+          segs.concat(['method']), a.method);
+      results.push(err);
+    }
+
+    if (!a.hasOwnProperty('href')) {
+      var err = error(ERRORS.ACTION_MISSING_HREF,
+          segs, a);
+      results.push(err);
+    } else if (a.href !== null && typeof a.href !== 'string') {
+      var err = error(ERRORS.ACTION_HREF_NOT_STRING,
+          segs.concat(['href']), a.href);
+      results.push(err);
+    }
+
+    if (a.hasOwnProperty('title') && a.title !== null
+        && typeof a.title !== 'string') {
+      var s = segs.concat(['title']);
+      var err = error(ERRORS.ACTION_TITLE_NOT_STRING, s, a.title);
+      results.push(err);
+    }
+
+    if (a.hasOwnProperty('type') && a.type !== null
+        && typeof a.title !== 'string') {
+      var s = segs.concat(['type']);
+      var err = error(ERRORS.ACTION_TYPE_NOT_STRING, s, a.type);
+      results.push(err);
+    }
+
+    if (a.hasOwnProperty('fields') && a.fields !== null
+        && !Array.isArray(a.fields)) {
+      var err = error(ERRORS.ACTION_FIELDS_NOT_ARRAY, 
+          segs.concat(['fields']), a.fields);
+      results.push(err);
+    } else {
+      results = results.concat(checkFields(a.fields, segs.concat(['fields'])));
+    }
+  });
+
+  return results;
+}
+
+function checkFields(fields, segments) {
+  return [];
+}
 
 function checkLinks(links, segments) {
   var results = [];
