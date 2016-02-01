@@ -1,5 +1,6 @@
 var jsonlint = require('jsonlint');
 var ERRORS = require('./errors');
+var WARNINGS = require('./warnings');
 
 function ValidationError(message, segments, value) {
   if (!(this instanceof ValidationError)) {
@@ -12,8 +13,8 @@ function ValidationError(message, segments, value) {
 }
 
 function ValidationWarning(message, segments, value) {
-  if (!(this instanceof ValidationError)) {
-    return new ValidationError(message, segments);
+  if (!(this instanceof ValidationWarning)) {
+    return new ValidationWarning(message, segments);
   }
 
   this.message = message;
@@ -29,13 +30,13 @@ function warn(message, segments, value) {
   return new ValidationWarning(message, segments, value);
 }
 
-module.exports = function validate(subject) {
+var validate = module.exports = function validate(subject) {
   var errors = [];
   var result = subject;
   var segments = [];
 
   try {
-    result = jsonlint.parse(subject);
+    result = jsonlint.parse(subject.toString('utf8'));
   } catch(err) {
     errors.push(error(ERRORS.INVALID_JSON + '\n' + err.message,
           segments, subject));
@@ -68,6 +69,31 @@ function checkEntity(result, segments) {
   if (result.hasOwnProperty('links')) {
     errors = errors.concat(checkLinks(result.links,
           segments.concat(['links'])));
+  }
+
+  if (segments.length === 0 || !result.hasOwnProperty('href')) {
+    var found = false;
+    if (result.hasOwnProperty('links') && Array.isArray(result.links)) {
+      found = result.links.some(function(l) {
+        return l.hasOwnProperty('rel')
+               && Array.isArray(l.rel)
+               && l.rel.length > 0
+               && l.rel.indexOf('self') !== -1;
+      });
+    }
+
+    if (!found) {
+      errors.push(warn(WARNINGS.MISSING_SELF_LINK,
+            segments.concat(['links']), result.links));
+    }
+  }
+
+  if (result.hasOwnProperty('title')) {
+    if (result.title != null && result.title !== null
+        && typeof result.title !== 'string') {
+      errors.push(error(ERRORS.TITLE_TYPE_NOT_STRING,
+            segments.concat(['title']), result.title));
+    }
   }
 
   return errors;
@@ -170,13 +196,15 @@ function checkLinks(links, segments) {
       errors.push(err);
     }
 
-    if (l.hasOwnProperty('title') && typeof l.title !== 'string') {
+    if (l.hasOwnProperty('title') && l.title !== null
+        && typeof l.title !== 'string') {
       var s = segs.concat(['title']);
       var err = error(ERRORS.LINK_TITLE_NOT_STRING, s, l.title);
       errors.push(err);
     }
 
-    if (l.hasOwnProperty('type') && typeof l.title !== 'string') {
+    if (l.hasOwnProperty('type') && l.type !== null
+        && typeof l.title !== 'string') {
       var s = segs.concat(['type']);
       var err = error(ERRORS.LINK_TYPE_NOT_STRING, s, l.type);
       errors.push(err);
@@ -185,3 +213,6 @@ function checkLinks(links, segments) {
 
   return errors;
 }
+
+validate.ValidationError = ValidationError;
+validate.ValidationWarning = ValidationWarning;

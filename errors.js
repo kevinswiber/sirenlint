@@ -14,7 +14,8 @@ const ERRORS = {
   LINK_MISSING_HREF: 'Link is missing `href` attribute',
   LINK_HREF_NOT_STRING: 'Link `href` attribute is not a string',
   LINK_TITLE_NOT_STRING: 'Link `title` attribute is not a string',
-  LINK_TYPE_NOT_STRING: 'Link `type` attribute is not a string'
+  LINK_TYPE_NOT_STRING: 'Link `type` attribute is not a string',
+  TITLE_TYPE_NOT_STRING: 'The `title` attribute is not a string'
 };
 
 module.exports = ERRORS;

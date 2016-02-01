@@ -6,6 +6,12 @@ var FILENAME = path.join(__dirname, 'test.json');
 
 var subject = fs.readFileSync(FILENAME);
 
-var errors = validate(subject);
+var results = validate(subject);
 
-console.log(errors);
+results.forEach(function(r) {
+  if (r instanceof validate.ValidationWarning) {
+    console.log('WARN:', r);
+  } else if (r instanceof validate.ValidationError) {
+    console.log('ERROR:', r);
+  }
+});
