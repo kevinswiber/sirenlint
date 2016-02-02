@@ -1,6 +1,6 @@
 #! /usr/bin/env node
 
-// vim: set ft=javascript:
+// vim: set filetype=javascript shiftwidth=2 tabstop=2 expandtab:
 
 var fs = require('fs');
 var validate = require('../validate');
@@ -29,7 +29,8 @@ if (process.stdin.isTTY) {
 }
 
 function validateContent(content) {
-  var results = validate(content);
+  var pruned = extractHttpResponseBody(content);
+  var results = validate(pruned);
 
   console.log(content);
   console.error('');
@@ -52,3 +53,28 @@ function validateContent(content) {
     }
   });
 };
+
+// extractHttpResponseBody removes the status line and headers.
+// It also handles HTTP/1.1 100 Continue responses, which
+// include two sets of response lines and headers.
+function extractHttpResponseBody(content) {
+  if (content.length < 5 || content.slice(0, 5) !== 'HTTP/') {
+    return content;
+  }
+
+  var emptyLineChars = '\r\n\r\n';
+
+  var index = content.indexOf(emptyLineChars);
+  if (index !== -1) {
+    var hasContinueLine = (content.length > 21
+        && content.slice(9, 21).toLowerCase() === '100 continue');
+
+    content = content.slice(index + emptyLineChars.length);
+
+    if (hasContinueLine) {
+      return extractHttpResponseBody(content);
+    }
+  }
+
+  return content;
+}
