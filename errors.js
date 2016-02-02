@@ -1,5 +1,3 @@
-'use strict';
-
 const ERRORS = {
   INVALID_JSON: 'Invalid JSON',
   CLASSES_NOT_ARRAY: 'The `class` attribute is not an array',

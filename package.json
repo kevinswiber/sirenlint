@@ -1,6 +1,6 @@
 {
   "name": "sirenlint",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "A lint tool for validating Siren (http://sirenspec.org).",
   "main": "validate.js",
   "directories": {
