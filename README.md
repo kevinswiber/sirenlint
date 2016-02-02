@@ -31,7 +31,7 @@ warning: ["links"], The main entity is missing a link with a `self` relation
 
 #### Output
 
-The `sirentool` command will output the original input followed by a summary of errors and/or warnings.  
+The `sirenlint` command will output the original input followed by a summary of errors and/or warnings.  
 The summary includes a stringified JSON array defining the JSON path of the associated error or warning 
 and a readable description of the problem.
 
