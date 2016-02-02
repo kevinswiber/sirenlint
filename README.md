@@ -10,7 +10,7 @@ A lint tool for validating Siren (http://sirenspec.org).
 $ sirenlint <siren-file>
 ```
 
-...or...
+_or_
 
 ```
 $ cat <siren-file> | sirenlint
