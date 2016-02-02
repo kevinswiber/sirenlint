@@ -217,7 +217,7 @@ function checkActions(actions, segments) {
     }
 
     if (a.hasOwnProperty('type') && a.type !== null
-        && typeof a.title !== 'string') {
+        && typeof a.type !== 'string') {
       var s = segs.concat(['type']);
       var err = error(ERRORS.ACTION_TYPE_NOT_STRING, s, a.type);
       results.push(err);

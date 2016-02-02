@@ -21,7 +21,7 @@ test('invalid json', function(t) {
   var results = validate(invalid);
 
   t.equal(results.length, 1);
-  t.equal(results[0].message.split('\n')[0], ERRORS.INVALID_JSON);
+  t.equal(results[0].message.split(',')[0], ERRORS.INVALID_JSON);
   t.deepEqual(results[0].segments, []);
   t.equal(results[0].value, invalid);
   t.end();

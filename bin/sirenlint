@@ -32,6 +32,18 @@ function validateContent(content) {
   var results = validate(content);
 
   console.log(content);
+  console.error('');
+
+  if (results.length === 0) {
+    console.error('sirenlint: no problems found');
+  } else {
+    var problems = results.length == 1
+      ? '1 problem was found'
+      : results.length + ' problems were found';
+
+    console.error('sirenlint: ' + problems + '\n');
+  }
+
   results.forEach(function(r) {
     if (r instanceof validate.ValidationWarning) {
       console.error('warn:', JSON.stringify(r.segments) + ',', r.message);
