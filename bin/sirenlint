@@ -3,14 +3,38 @@
 // vim: set filetype=javascript shiftwidth=2 tabstop=2 expandtab:
 
 var fs = require('fs');
+var path = require('path');
 var validate = require('../validate');
 
 if (process.stdin.isTTY) {
   if (process.argv.length < 3) {
-    console.log('Usage: sirenlint <filename>');
+    printUsage();
   } else {
-    var content = fs.readFileSync(process.argv[2], { encoding: 'utf8' });
-    validateContent(content);
+    var arg = process.argv[2];
+
+    if (['-h', '--help'].indexOf(arg) !== -1) {
+      printUsage();
+      return;
+    }
+
+    if (['-v', '--version'].indexOf(arg) !== -1) {
+      printVersion();
+      return;
+    }
+
+    var filename = arg;
+    fs.stat(filename, function(err, stat) {
+      if (err) {
+        console.error(err.message);
+        return;
+      }
+      fs.readFile(filename, { encoding: 'utf8' }, function(err, content) {
+        if (err) {
+          console.error(err.message);
+        }
+        validateContent(content);
+      });
+    });
   }
 } else {
   var content = '';
@@ -77,4 +101,18 @@ function extractHttpResponseBody(content) {
   }
 
   return content;
+}
+
+function printUsage() {
+  console.log('Usage: sirenlint siren_file');
+  console.log('       sirenlint [ -h | --help | -v | --version ]');
+  console.log('');
+  console.log('If no <siren_file> is specified, sirenlint reads from stdin.');
+  console.log('The HTTP response body will be extracted when piping in ');
+  console.log('the output of `curl -i ...`.');
+}
+
+function printVersion() {
+  var package = require(path.join(__dirname, '..', 'package.json'));
+  console.log('sirenlint version', package.version);
 }
