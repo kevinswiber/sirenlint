@@ -43,11 +43,14 @@ var validate = module.exports = function validate(subject) {
   var subject = subject;
   var segments = [];
 
+  jsonlint.parser.parseError = function(str, hash) {
+    var err = 'line '+ hash.loc.first_line +', col '+ hash.loc.last_column +', found: \''+ hash.token +'\' - expected: '+ hash.expected.join(', ') +'.'
+    results.push(error(ERRORS.INVALID_JSON + ', ' + err, [], subject));
+  };
+
   try {
     subject = jsonlint.parse(subject.toString('utf8'));
   } catch(err) {
-    results.push(error(ERRORS.INVALID_JSON + '\n' + err.message,
-          segments, subject));
     return results;
   }
 

@@ -1,0 +1,60 @@
+#! /usr/bin/env node
+
+// vim: set ft=javascript:
+
+var fs = require('fs');
+var path = require('path');
+var validate = require('../validate');
+
+if (process.stdin.isTTY) {
+  if (process.argv.length < 3) {
+    console.log('Usage: sirenlint <filename>');
+  } else {
+    var content = fs.readFileSync(process.argv[2], { encoding: 'utf8' });
+    validateContent(content);
+  }
+} else {
+  var content = '';
+
+  process.stdin.setEncoding('utf8');
+  process.stdin.on('readable', function() {
+    var chunk = this.read();
+    if (chunk != null) {
+      content += chunk;
+    }
+  });
+
+  process.stdin.on('end', function() {
+    validateContent(content);
+  });
+}
+
+function validateContent(content) {
+  var results = validate(content);
+
+  console.log(content);
+  results.forEach(function(r) {
+    if (r instanceof validate.ValidationWarning) {
+      console.error('warn:', JSON.stringify(r.segments) + ',', r.message);
+    } else if (r instanceof validate.ValidationError) {
+      console.error('error:', JSON.stringify(r.segments) + ',', r.message);
+    }
+  });
+};
+
+
+/*
+var FILENAME = path.join(__dirname, '..', 'example', 'test.json');
+
+var subject = fs.readFileSync(FILENAME);
+
+var results = validate(subject);
+
+results.forEach(function(r) {
+  if (r instanceof validate.ValidationWarning) {
+    console.log('WARN:', r);
+  } else if (r instanceof validate.ValidationError) {
+    console.log('ERROR:', r);
+  }
+});
+*/
