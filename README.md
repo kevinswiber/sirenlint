@@ -2,6 +2,8 @@
 
 A lint tool for validating Siren (http://sirenspec.org).
 
+[![Build Status](https://travis-ci.org/kevinswiber/sirenlint.svg?branch=master)](https://travis-ci.org/kevinswiber/sirenlint) 
+
 ## Usage
 
 ### CLI
