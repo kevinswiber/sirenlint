@@ -3,7 +3,6 @@
 // vim: set ft=javascript:
 
 var fs = require('fs');
-var path = require('path');
 var validate = require('../validate');
 
 if (process.stdin.isTTY) {
@@ -41,20 +40,3 @@ function validateContent(content) {
     }
   });
 };
-
-
-/*
-var FILENAME = path.join(__dirname, '..', 'example', 'test.json');
-
-var subject = fs.readFileSync(FILENAME);
-
-var results = validate(subject);
-
-results.forEach(function(r) {
-  if (r instanceof validate.ValidationWarning) {
-    console.log('WARN:', r);
-  } else if (r instanceof validate.ValidationError) {
-    console.log('ERROR:', r);
-  }
-});
-*/
