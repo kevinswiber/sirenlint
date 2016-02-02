@@ -46,7 +46,7 @@ function validateContent(content) {
 
   results.forEach(function(r) {
     if (r instanceof validate.ValidationWarning) {
-      console.error('warn:', JSON.stringify(r.segments) + ',', r.message);
+      console.error('warning:', JSON.stringify(r.segments) + ',', r.message);
     } else if (r instanceof validate.ValidationError) {
       console.error('error:', JSON.stringify(r.segments) + ',', r.message);
     }

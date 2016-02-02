@@ -26,7 +26,7 @@ $ echo '{ "links": [ { "rel": ["edit"] } ] }' | sirenlint
 sirenlint: 2 problems were found
 
 error: ["links",0], Link is missing `href` attribute
-warn: ["links"], The main entity is missing a link with a `self` relation
+warning: ["links"], The main entity is missing a link with a `self` relation
 ```
 
 #### Output
@@ -50,7 +50,7 @@ var results = validate(subject);
 
 results.forEach(function(r) {
   if (r instanceof validate.ValidationWarning) {
-    console.log('WARN:', r);
+    console.log('WARNING:', r);
   } else if (r instanceof validate.ValidationError) {
     console.log('ERROR:', r);
   }
