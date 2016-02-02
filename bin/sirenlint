@@ -23,15 +23,28 @@ if (process.stdin.isTTY) {
     }
 
     var filename = arg;
-    fs.stat(filename, function(err, stat) {
+    fs.stat(filename, function(err, stats) {
+      var readErrorPrefix = 'sirenlint: error reading file,';
       if (err) {
-        console.error(err.message);
+        if (err.code === 'ENOENT') {
+          console.error(readErrorPrefix, filename, 'does not exist');
+        } else {
+          console.error(readErrorPrefix, err.message);
+        }
         return;
       }
+
+      if (stats.isDirectory()) {
+        console.error(readErrorPrefix, filename, 'is a directory');
+        return;
+      }
+
       fs.readFile(filename, { encoding: 'utf8' }, function(err, content) {
         if (err) {
-          console.error(err.message);
+          console.error(readErrorPrefix, err.message);
+          return;
         }
+
         validateContent(content);
       });
     });
@@ -107,9 +120,9 @@ function printUsage() {
   console.log('Usage: sirenlint siren_file');
   console.log('       sirenlint [ -h | --help | -v | --version ]');
   console.log('');
-  console.log('If no <siren_file> is specified, sirenlint reads from stdin.');
-  console.log('The HTTP response body will be extracted when piping in ');
-  console.log('the output of `curl -i ...`.');
+  console.log('If no <siren_file> is specified, input is read from stdin.');
+  console.log('The response body will be validated when piping the ');
+  console.log('stdout of `curl -i` into sirenlint.'); 
 }
 
 function printVersion() {
