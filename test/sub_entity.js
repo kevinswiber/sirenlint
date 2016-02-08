@@ -163,7 +163,7 @@ test('sub-entity links item rel is not an array', function(t) {
 
   t.equal(results.length, 1);
   t.equal(results[0].message, ERRORS.LINK_RELS_NOT_ARRAY);
-  t.deepEqual(results[0].segments, ['entities', 0, 'links', 0]);
+  t.deepEqual(results[0].segments, ['entities', 0, 'links', 0, 'rel']);
   t.deepEqual(results[0].value, { href: 'http://example.com', rel: null });
   t.end();
 });
@@ -599,5 +599,76 @@ test('sub-entity action field type is unknown', function(t) {
   t.equal(results[0].message, WARNINGS.UNKNOWN_FIELD);
   t.deepEqual(results[0].segments, ['entities', 0, 'actions', 0, 'fields', 0, 'type']);
   t.deepEqual(results[0].value, 'mystery');
+  t.end();
+});
+
+test('sub-entity links item rel is empty', function(t) {
+  var invalid = JSON.stringify({
+    entities: [{
+      rel: ['item'],
+      links: [{
+        href: 'http://example.com',
+        rel: []
+      }]
+    }]
+  });
+
+  var results = validate(invalid);
+  results = errors(results);
+
+  t.equal(results.length, 1);
+  t.equal(results[0].message, ERRORS.LINK_REL_IS_EMPTY);
+  t.deepEqual(results[0].segments,
+      ['entities', 0, 'links', 0, 'rel']);
+  t.deepEqual(results[0].value, []);
+  t.end();
+});
+
+test('sub-entity rel attribute is not an array', function(t) {
+  var invalid = JSON.stringify({
+    entities: [{ rel: {} }]
+  });
+
+  var results = validate(invalid);
+  results = errors(results);
+
+  t.equal(results.length, 1);
+  t.equal(results[0].message, ERRORS.SUB_ENTITY_RELS_NOT_ARRAY);
+  t.deepEqual(results[0].segments, ['entities', 0, 'rel']);
+  t.deepEqual(results[0].value, {});
+  t.end();
+});
+
+test('sub-entity rel item is not a string', function(t) {
+  var invalid = JSON.stringify({
+    entities: [{
+      rel: [0],
+    }]
+  });
+
+  var results = validate(invalid);
+  results = errors(results);
+
+  t.equal(results.length, 1);
+  t.equal(results[0].message, ERRORS.SUB_ENTITY_REL_NOT_STRING);
+  t.deepEqual(results[0].segments, ['entities', 0, 'rel', 0]);
+  t.deepEqual(results[0].value, 0);
+  t.end();
+});
+
+test('sub-entity rel is empty', function(t) {
+  var invalid = JSON.stringify({
+    entities: [{
+      rel: []
+    }]
+  });
+
+  var results = validate(invalid);
+  results = errors(results);
+
+  t.equal(results.length, 1);
+  t.equal(results[0].message, ERRORS.SUB_ENTITY_REL_IS_EMPTY);
+  t.deepEqual(results[0].segments, ['entities', 0, 'rel']);
+  t.deepEqual(results[0].value, []);
   t.end();
 });

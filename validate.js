@@ -158,6 +158,28 @@ function checkSubEntities(entities, segments) {
     if (!e.hasOwnProperty('rel')) {
       var err = error(ERRORS.SUB_ENTITY_MISSING_REL, segs, e);
       results.push(err);
+    } else {
+      var rel = e.rel;
+      var s = segs.concat(['rel']);
+
+
+      if (!Array.isArray(rel)) {
+        var err = error(ERRORS.SUB_ENTITY_RELS_NOT_ARRAY, s, rel);
+        results.push(err);
+      } else {
+        if (rel.length === 0) {
+          var err = error(ERRORS.SUB_ENTITY_REL_IS_EMPTY, s, rel);
+          results.push(err);
+          return;
+        }
+
+        rel.forEach(function(r, j) {
+          if (typeof r !== 'string') {
+            var err = error(ERRORS.SUB_ENTITY_REL_NOT_STRING, s.concat([j]), r);
+            results.push(err);
+          }
+        });
+      }
     }
 
     results = results.concat(checkEntity(e, segs));
@@ -305,21 +327,25 @@ function checkLinks(links, segments) {
       results.push(err);
     } else {
       var rel = l.rel;
-      segs.push('rel');
+      var s = segs.concat(['rel']);
 
       if (!Array.isArray(rel)) {
-        var err = error(ERRORS.LINK_RELS_NOT_ARRAY, segs, l);
+        var err = error(ERRORS.LINK_RELS_NOT_ARRAY, s, l);
         results.push(err);
       } else {
+        if (rel.length === 0) {
+          var err = error(ERRORS.LINK_REL_IS_EMPTY, s, rel);
+          results.push(err);
+          return;
+        }
+
         rel.forEach(function(r, j) {
           if (typeof r !== 'string') {
-            var err = error(ERRORS.LINK_REL_NOT_STRING, segs.concat([j]), r);
+            var err = error(ERRORS.LINK_REL_NOT_STRING, s.concat([j]), r);
             results.push(err);
           }
         });
       }
-
-      segs.pop();
     }
 
     if (!l.hasOwnProperty('href')) {

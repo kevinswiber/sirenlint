@@ -90,7 +90,7 @@ test('root sub-entities is an array', function(t) {
 test('root sub-entity is missing rel attribute', function(t) {
   var invalid = JSON.stringify({
     entities: [
-      { rel: 'self' }, {}
+      { rel: ['self'] }, {}
     ],
     links: [ { rel: ['self'], href: '' } ]
   });
@@ -168,7 +168,7 @@ test('root links item rel is not an array', function(t) {
 
   t.equal(results.length, 1);
   t.equal(results[0].message, ERRORS.LINK_RELS_NOT_ARRAY);
-  t.deepEqual(results[0].segments, ['links', 0]);
+  t.deepEqual(results[0].segments, ['links', 0, 'rel']);
   t.deepEqual(results[0].value, { href: 'http://example.com', rel: null });
   t.end();
 });
@@ -532,5 +532,23 @@ test('root action field type is unknown', function(t) {
   t.equal(results[0].message, WARNINGS.UNKNOWN_FIELD);
   t.deepEqual(results[0].segments, ['actions', 0, 'fields', 0, 'type']);
   t.deepEqual(results[0].value, 'mystery');
+  t.end();
+});
+
+test('root links item rel is empty', function(t) {
+  var invalid = JSON.stringify({
+    links: [{
+      href: 'http://example.com',
+      rel: []
+    }]
+  });
+
+  var results = validate(invalid);
+  results = errors(results);
+
+  t.equal(results.length, 1);
+  t.equal(results[0].message, ERRORS.LINK_REL_IS_EMPTY);
+  t.deepEqual(results[0].segments, ['links', 0, 'rel']);
+  t.deepEqual(results[0].value, []);
   t.end();
 });
